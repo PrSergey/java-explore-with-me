@@ -36,18 +36,4 @@ public class EndpointHit {
     @Column(name = "time_add")
     LocalDateTime timestamp;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EndpointHit)) return false;
-        EndpointHit that = (EndpointHit) o;
-        return Objects.equals(id, that.id) && app.equals(that.app)
-                && uri.equals(that.uri) && ip.equals(that.ip)
-                && timestamp.equals(that.timestamp);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
