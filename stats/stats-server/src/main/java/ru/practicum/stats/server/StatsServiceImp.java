@@ -1,7 +1,6 @@
 package ru.practicum.stats.server;
 
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.ViewStatsDto;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class StatsServiceImp implements StatsService{
+public class StatsServiceImp implements StatsService {
 
     StatsRepository statsRepository;
 
@@ -30,7 +29,7 @@ public class StatsServiceImp implements StatsService{
     @Override
     public List<ViewStatsDto> get(List<String> uris, Boolean unique, LocalDateTime start, LocalDateTime end) {
         List<ViewStats> allViewStats;
-        if(unique)
+        if (unique)
             allViewStats = statsRepository.getWithUniqueIp(start, end, uris);
         else
             allViewStats = statsRepository.getAllEndpointHit(start, end, uris);
