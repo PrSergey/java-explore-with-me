@@ -1,6 +1,7 @@
 package ru.practicum.main.category.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.dto.CategoryDto;
@@ -12,11 +13,11 @@ import ru.practicum.main.excepsion.ExistenceException;
 
 @Service
 @Transactional(readOnly = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CatAdminServiceImpl implements CatAdminService {
 
-    CategoryMapper categoryMapper;
-    CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     @Override
@@ -39,7 +40,6 @@ public class CatAdminServiceImpl implements CatAdminService {
         if(!categoryRepository.existsById(catId)) {
             throw new ExistenceException("Category with id=" + catId + " was not found");
         }
-
         categoryRepository.deleteById(catId);
     }
 

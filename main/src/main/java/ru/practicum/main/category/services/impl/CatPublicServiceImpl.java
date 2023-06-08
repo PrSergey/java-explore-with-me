@@ -1,6 +1,7 @@
 package ru.practicum.main.category.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CatPublicServiceImpl implements CatPublicService {
 
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    CategoryMapper categoryMapper;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public List<CategoryDto> getAllCategories(int from, int size) {
