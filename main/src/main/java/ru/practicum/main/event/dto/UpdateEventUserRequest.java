@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.main.category.model.Category;
 import ru.practicum.main.constant.EventState;
+import ru.practicum.main.constant.EventStateAction;
 import ru.practicum.main.event.model.Location;
 
 import javax.validation.constraints.Future;
@@ -31,7 +32,7 @@ public class UpdateEventUserRequest {
 
     private Boolean requestModeration;
 
-    private EventState stateAction;
+    private EventStateAction stateAction;
 
     private String title;
 

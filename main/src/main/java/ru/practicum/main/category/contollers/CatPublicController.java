@@ -1,6 +1,7 @@
 package ru.practicum.main.category.contollers;
 
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.category.services.CatPublicService;
@@ -9,6 +10,7 @@ import ru.practicum.main.category.dto.CategoryDto;
 import java.util.List;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 @RequestMapping("/categories")
 public class CatPublicController {
@@ -22,7 +24,7 @@ public class CatPublicController {
         return catPublicService.getAllCategories(from, size);
     }
 
-    @GetMapping("/catId}")
+    @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable long catId) {
         log.info("GET - запрос на получение категории с id={}", catId);
         return catPublicService.getCategoryByID(catId);
