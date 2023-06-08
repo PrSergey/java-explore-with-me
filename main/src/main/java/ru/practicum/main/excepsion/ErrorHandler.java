@@ -13,8 +13,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleEntityNotFoundException(final ExistenceException e) {
-        return ErrorResponse.builder()
+    public ApiError handleEntityNotFoundException(final ExistenceException e) {
+        return ApiError.builder()
                 .status("NOT_FOUND")
                 .reason("The required object was not found.")
                 .message(e.getMessage())
@@ -22,5 +22,15 @@ public class ErrorHandler {
                 .build();
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleIncorrectParameterException(final ValidationException e) {
+        return ApiError.builder()
+                .status("FORBIDDEN")
+                .reason("For the requested operation the conditions are not met.")
+                .message(e.getMessage())
+                .time(LocalDateTime.now())
+                .build();
+    }
 
 }

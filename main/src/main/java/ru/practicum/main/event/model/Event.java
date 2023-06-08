@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @Getter
 @Setter
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,61 +22,67 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "annotation")
     @NotBlank
-    String annotation;
+    private String annotation;
 
     @JoinColumn(name = "cat_id")
     @ManyToOne
-    @NotNull
-    Category category;
+    private Category category;
 
     @Column(name = "confirmed_requests")
-    Integer confirmedRequests;
+    private Integer confirmedRequests;
 
     @Column(name = "created_on")
-    LocalDateTime createdOn;
+    private LocalDateTime createdOn;
 
     @Column(name = "description")
-    String description;
+    private String description;
 
     @Column(name = "event_date")
-    @NotNull
-    LocalDateTime eventDate;
+    private LocalDateTime eventDate;
 
     @JoinColumn(name = "initiator_id")
     @ManyToOne
-    @NotNull
-    User initiator;
+    private User initiator;
 
     @JoinColumn(name = "loc_id")
     @ManyToOne
-    @NotNull
-    Location location;
+    private Location location;
 
     @Column(name = "paid")
-    @NotNull
-    Boolean paid;
+    private Boolean paid;
 
     @Column(name = "participant_limit")
-    Integer participantLimit;
+    private Integer participantLimit;
 
     @Column(name = "published_on")
-    LocalDateTime publishedOn;
+    private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
-    Boolean requestModeration;
+    private Boolean requestModeration;
 
     @Column(name = "state")
-    EventState state;
+    private EventState state;
 
     @Column(name = "title")
-    @NotNull
-    String title;
+    private String title;
 
     @Column(name = "views")
-    Long views;
+    private Long views;
 
+    public Event(String annotation, Category category, String description, LocalDateTime eventDate, Location location,
+                 Boolean paid, Integer participantLimit, Boolean requestModeration, String title) {
+        this.annotation = annotation;
+        this.category = category;
+        this.description = description;
+        this.eventDate = eventDate;
+        this.location = location;
+        this.paid = paid;
+        this.participantLimit = participantLimit;
+        this.requestModeration = requestModeration;
+        this.title = title;
+    }
 }

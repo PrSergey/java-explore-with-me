@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 
 @Builder
-public class ErrorResponse {
+public class ApiError {
 
     private final String status;
     private final String message;
@@ -14,7 +14,7 @@ public class ErrorResponse {
     private final LocalDateTime time;
 
 
-    public ErrorResponse(String status, String message, String reason, LocalDateTime time) {
+    public ApiError(String status, String message, String reason, LocalDateTime time) {
         this.status = status;
         this.message = message;
         this.reason = reason;

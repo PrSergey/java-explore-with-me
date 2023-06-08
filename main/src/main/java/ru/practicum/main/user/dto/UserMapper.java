@@ -1,23 +1,19 @@
 package ru.practicum.main.user.dto;
 
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.main.user.model.User;
 
-public class UserMapper {
+@Mapper
+public interface UserMapper {
 
-    public static User fromUserDto(UserDto userDto) {
-        return User.builder()
-                .id(userDto.id)
-                .name(userDto.name)
-                .email(userDto.email)
-                .build();
-    }
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    public static UserDto toUserDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-    }
+    User fromUserDto(UserDto userDto);
+
+    UserDto toUserDto(User user);
+
+    UserShortDto toUserShortDto(User user);
 
 }

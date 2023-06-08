@@ -1,21 +1,16 @@
 package ru.practicum.main.category.dto;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.main.category.model.Category;
 
-public class CategoryMapper {
+@Mapper
+public interface CategoryMapper {
 
-    public static Category fromCategoryDto(CategoryDto categoryDto) {
-        return Category.builder()
-                .id(categoryDto.getId())
-                .name(categoryDto.getName())
-                .build();
-    }
+    CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    public static CategoryDto toCategoryDto(Category category) {
-        return CategoryDto.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .build();
-    }
+    Category fromCategoryDto(CategoryDto categoryDto);
+
+    CategoryDto toCategoryDto(Category category);
 
 }

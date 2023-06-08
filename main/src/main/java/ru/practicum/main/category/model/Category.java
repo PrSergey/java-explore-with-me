@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "category")
 @Getter
 @Setter
-@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class Category {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotBlank
     @Column(name = "name")
