@@ -1,11 +1,13 @@
 package ru.practicum.main.excepsion;
 
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 
 @Builder
+@Getter
 public class ApiError {
 
     private final String status;

@@ -15,14 +15,13 @@ import java.time.LocalDateTime;
 @Table(name = "events")
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "annotation")
     @NotBlank
@@ -33,7 +32,7 @@ public class Event {
     private Category category;
 
     @Column(name = "confirmed_requests")
-    private Integer confirmedRequests;
+    private long confirmedRequests;
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;
@@ -53,25 +52,26 @@ public class Event {
     private Location location;
 
     @Column(name = "paid")
-    private Boolean paid;
+    private boolean paid;
 
     @Column(name = "participant_limit")
-    private Integer participantLimit;
+    private long participantLimit;
 
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
-    private Boolean requestModeration;
+    private boolean requestModeration;
 
-    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state_event")
     private EventState state;
 
     @Column(name = "title")
     private String title;
 
     @Column(name = "views")
-    private Long views;
+    private long views;
 
     public Event(String annotation, Category category, String description, LocalDateTime eventDate, Location location,
                  Boolean paid, Integer participantLimit, Boolean requestModeration, String title) {

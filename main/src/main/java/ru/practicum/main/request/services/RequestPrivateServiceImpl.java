@@ -46,7 +46,7 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
         if(!event.getState().equals(EventState.PUBLISHED)) {
             throw new ValidationException("You cannot participate in an unpublished event.");
         }
-        long countRequestByEvent = requestRepository.countByEvent_id(eventId);
+        long countRequestByEvent = requestRepository.countByEvent_idAndStatus(eventId, RequestStatus.CONFIRMED);
         if(event.getParticipantLimit() != 0 && countRequestByEvent > event.getParticipantLimit()) {
             throw new ValidationException("The limit of requests for participation in the event has been reached.");
         }
@@ -58,10 +58,13 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 .event(event)
                 .requester(user)
                 .build();
-        if(!event.getRequestModeration()){
+        if(!event.isRequestModeration()){
             requestByEvent.setStatus(RequestStatus.CONFIRMED);
         } else {
             requestByEvent.setStatus(RequestStatus.PENDING);
+        }
+        if(event.getParticipantLimit() == 0) {
+            requestByEvent.setStatus(RequestStatus.CONFIRMED);
         }
 
         return requestMapper.toParticipationRequestDto(requestRepository.save(requestByEvent));

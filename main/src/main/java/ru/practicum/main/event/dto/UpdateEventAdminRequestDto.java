@@ -1,28 +1,26 @@
 package ru.practicum.main.event.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import ru.practicum.main.category.model.Category;
-import ru.practicum.main.constant.EventState;
 import ru.practicum.main.constant.EventStateAction;
 import ru.practicum.main.event.model.Location;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
-public class UpdateEventUserRequest {
+public class UpdateEventAdminRequestDto {
 
+
+    @Size(min = 20, max = 2000)
     private String annotation;
 
-    private Category category;
+    private Long category;
 
+    @Size(min = 20, max = 7000)
     private String description;
 
-    private LocalDateTime eventDate;
+    private String eventDate;
 
     private Location location;
 
@@ -34,6 +32,7 @@ public class UpdateEventUserRequest {
 
     private EventStateAction stateAction;
 
+    @Size(min = 3, max = 120)
     private String title;
 
 }

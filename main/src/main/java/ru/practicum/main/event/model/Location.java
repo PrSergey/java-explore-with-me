@@ -6,11 +6,13 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name = "location")
+@Table(name = "locations")
 @ToString
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Location {
 
     @Id

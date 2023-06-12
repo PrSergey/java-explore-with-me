@@ -36,8 +36,13 @@ public class UserAdminServiceImp implements UserAdminService {
     @Override
     public List<UserDto> getUsers(List<Long> usersId, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
-        return userRepository.findAllByIdIn(usersId, pageRequest)
-                .stream()
+        List<User> users;
+        if (usersId == null) {
+            users = userRepository.findAll(pageRequest).stream().collect(Collectors.toList());
+        } else {
+            users = userRepository.findAllByIdIn(usersId, pageRequest);
+        }
+        return users.stream()
                 .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }

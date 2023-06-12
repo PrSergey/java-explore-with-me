@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @Builder
 public class EventDto {
 
+    private long id;
+
     private String annotation;
 
     private Category category;
@@ -27,7 +29,7 @@ public class EventDto {
 
     private String description;
 
-    private LocalDateTime eventDate;
+    private String eventDate;
 
     private UserShortDto initiator;
 

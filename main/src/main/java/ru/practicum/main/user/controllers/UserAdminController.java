@@ -37,9 +37,10 @@ public class UserAdminController {
 
     @DeleteMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long userId) {
+    public HttpStatus deleteUser(@PathVariable Long userId) {
         log.info("DELETE - запрос на удаление пользователя с id = {}", userId);
         userAdminService.deleteUser(userId);
+        return HttpStatus.NO_CONTENT;
     }
 
 }
