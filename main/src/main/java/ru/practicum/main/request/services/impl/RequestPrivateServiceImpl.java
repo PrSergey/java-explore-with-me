@@ -1,6 +1,7 @@
 package ru.practicum.main.request.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.constant.EventState;
@@ -23,24 +24,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RequestPrivateServiceImpl implements RequestPrivateService {
 
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
-    RequestMapper requestMapper;
+    private final RequestMapper requestMapper;
 
     @Override
     @Transactional
     public ParticipationRequestDto save(long userId, long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found."));
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == requestRepository.countAllByEvent_Id(eventId)) {
+        if (event.getParticipantLimit() != 0
+                && event.getParticipantLimit() == requestRepository.countAllByEvent_Id(eventId)) {
             throw new ValidationException("The limit has been reached for the event.");
         }
         if(requestRepository.existsByRequester_IdAndEvent_id(userId, eventId)) {

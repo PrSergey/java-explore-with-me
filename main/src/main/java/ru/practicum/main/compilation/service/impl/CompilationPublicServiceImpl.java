@@ -28,7 +28,6 @@ public class CompilationPublicServiceImpl implements CompilationPublicService {
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
-
         return compilationRepository.findAllByPinned(pinned, pageRequest).stream()
                 .map(compilationMapper::toCompilationDto)
                 .collect(Collectors.toList());

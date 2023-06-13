@@ -28,14 +28,14 @@ public class EventAdminController {
                                @RequestParam(required = false) String rangeEnd,
                                @RequestParam(defaultValue = "0") int from,
                                @RequestParam(defaultValue = "10") int size) {
-        log.info("GET - запрос админ поиска события администратором");
+        log.info("GET admin - запрос админ поиска события администратором");
         return eventAdminService.searchEvent(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
     public EventDto updateAdminByEvent(@PathVariable long eventId,
                                 @RequestBody @Valid UpdateEventAdminRequestDto eventDto) {
-        log.info("PATCH - запрос админ редактирование данных события и его статуса (отклонение/публикация).");
+        log.info("PATCH admin - запрос админ редактирование данных события и его статуса (отклонение/публикация).");
         return eventAdminService.updateAdminByEvent(eventId, eventDto);
     }
 

@@ -34,17 +34,15 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     @Override
     @Transactional
     public CompilationDto save(NewCompilationDto compilationDto) {
+        if (compilationDto.getTitle() == null || compilationDto.getTitle().isBlank()) {
+            throw new UnexpectedTypeException("The title cannot be null and blank");
+        }
+
         Compilation compilation = new Compilation();
         if (compilationDto.getPinned() == null){
             compilation.setPinned(false);
         } else {
             compilation.setPinned(compilationDto.getPinned());
-        }
-        if (compilationDto.getTitle() == null) {
-            throw new UnexpectedTypeException("The title cannot be bull");
-        }
-        if (compilation.getTitle().isBlank()) {
-            throw new UnexpectedTypeException("The title cannot be blanck");
         }
         compilation.setTitle(compilationDto.getTitle());
         compilation.setEvents(getEvents(compilationDto.getEvents()));
@@ -54,18 +52,18 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     @Override
     @Transactional
     public CompilationDto update(long compId, NewCompilationDto compilationDto) {
-        Compilation newCompilation = compilationRepository.findById(compId)
+        Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Не найдена подборка событий с ID = %s", compId)));
         if (compilationDto.getTitle() != null) {
-            newCompilation.setTitle(compilationDto.getTitle());
+            compilation.setTitle(compilationDto.getTitle());
         }
         if (compilationDto.getPinned() != null) {
-            newCompilation.setPinned(compilationDto.getPinned());
+            compilation.setPinned(compilationDto.getPinned());
         }
         if (compilationDto.getEvents() != null) {
-            newCompilation.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()));
+            compilation.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()));
         }
-        return compilationMapper.toCompilationDto(compilationRepository.save(newCompilation));
+        return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
 
     @Override
@@ -74,6 +72,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         if (!compilationRepository.existsById(compilationId)) {
             throw new ExistenceException("Compilation with id=" + compilationId + " was not found");
         }
+
         compilationRepository.deleteById(compilationId);
     }
 

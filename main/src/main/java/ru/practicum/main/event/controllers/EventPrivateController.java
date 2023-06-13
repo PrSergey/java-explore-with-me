@@ -25,7 +25,7 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventDto saveEvent(@PathVariable long userId,
                               @RequestBody @Valid NewEventDto newEventDto) {
-        log.info("POST - запрос на добавление эвента");
+        log.info("POST private - запрос на добавление эвента");
         return eventPrivateService.saveEvent(userId, newEventDto);
     }
 
@@ -33,14 +33,14 @@ public class EventPrivateController {
     public List<EventShortDto> getAllEventByInitiatorId(@PathVariable long userId,
                                                         @RequestParam(name = "from", defaultValue = "0") int from,
                                                         @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("GET - запрос на получение всех событий пользователя с id={}", userId);
+        log.info("GET private - запрос на получение всех событий пользователя с id={}", userId);
         return eventPrivateService.getAllEventByInitiatorId(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     public EventDto getEventById(@PathVariable long userId,
                                  @PathVariable long eventId) {
-        log.info("GET - запрос на получение эвента с id={} пользователем с id={}", eventId, userId);
+        log.info("GET private - запрос на получение эвента с id={} пользователем с id={}", eventId, userId);
         return eventPrivateService.getEventById(userId, eventId);
     }
 
@@ -48,14 +48,14 @@ public class EventPrivateController {
     public EventDto updateEvent(@PathVariable long userId,
                                 @PathVariable long eventId,
                                 @RequestBody @Valid  UpdateEventUserRequestDto updateEvent) {
-        log.info("PATCH - запрос пользователем с id={} на обновление эвента с id={}", userId, eventId);
+        log.info("PATCH private - запрос пользователем с id={} на обновление эвента с id={}", userId, eventId);
         return eventPrivateService.updateEvent(userId, eventId,updateEvent);
     }
 
     @GetMapping("/{eventId}/requests")
     List<ParticipationRequestDto> getRequestByEvent(@PathVariable long userId,
                                                     @PathVariable long eventId) {
-        log.info("GET - запрос получение информации о запросах на участие в событии текущего пользователя");
+        log.info("GET private - запрос получение информации о запросах на участие в событии текущего пользователя");
         return eventPrivateService.getRequestByEvent(userId, eventId);
     }
 
@@ -64,10 +64,9 @@ public class EventPrivateController {
                                                                 @PathVariable long eventId,
                                                                 @RequestBody(required = false) @Valid
                                                                 EventRequestStatusUpdateRequestDto requestsByEvent) {
-        log.info("PATCH - запрос изменение статуса (подтверждена, отменена) заявок на участие " +
+        log.info("PATCH private - запрос изменение статуса (подтверждена, отменена) заявок на участие " +
                 "в событии текущего пользователя");
         return eventPrivateService.updateEventRequest(userId, eventId, requestsByEvent);
     }
-
 
 }

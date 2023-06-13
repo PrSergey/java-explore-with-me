@@ -1,6 +1,7 @@
 package ru.practicum.main.user.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +19,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserAdminServiceImp implements UserAdminService {
 
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Transactional
     @Override

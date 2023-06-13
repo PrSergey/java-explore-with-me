@@ -31,14 +31,14 @@ public class EventPublicController {
                             @RequestParam(defaultValue = "0") int from,
                             @RequestParam(defaultValue = "10") int size,
                             HttpServletRequest request) {
-        log.info("GET - запрос пользователя на получение событий с возможностью фильтрации");
+        log.info("GET public - запрос пользователя на получение событий с возможностью фильтрации");
         return eventPublicService.getEvent(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{id}")
     EventDto getEventById(@PathVariable long id, HttpServletRequest request) {
-        log.info("GET - запрос пользователя на получение подробной информации об опубликованном событии с id={}", id);
+        log.info("GET public - запрос пользователя на получение подробной информации об опубликованном событии с id={}", id);
         return eventPublicService.getEventById(id, request);
     }
 

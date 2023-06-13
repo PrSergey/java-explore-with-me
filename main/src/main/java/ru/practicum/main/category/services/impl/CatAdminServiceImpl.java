@@ -34,7 +34,7 @@ public class CatAdminServiceImpl implements CatAdminService {
     @Transactional
     @Override
     public CategoryDto updateCategory(long catId, CategoryDto categoryDto) {
-        //checkNameCat(categoryDto.getName());
+        checkNameCat(categoryDto.getName());
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new ExistenceException("Category with id=" + catId + " was not found."));
         category.setName(categoryDto.getName());

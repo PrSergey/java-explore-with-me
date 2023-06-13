@@ -22,20 +22,22 @@ public class RequestPrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto saveRequest(@PathVariable long userId,
                                         @RequestParam long eventId) {
-        log.info("POST - запрос от пользователя с id={} добавления заявки на участие в событии с id={}.", userId, eventId);
+        log.info("POST private - запрос от пользователя с id={} добавления заявки на участие в событии с id={}.",
+                userId, eventId);
         return requestPrivateService.save(userId, eventId);
     }
 
     @GetMapping
     public List<ParticipationRequestDto> getRequestByUser(@PathVariable long userId) {
-        log.info("GET - запрос от пользователя с id={} на получение заявок на свои участия в событиях.", userId);
+        log.info("GET private - запрос от пользователя с id={} на получение заявок на свои участия в событиях.",
+                userId);
         return requestPrivateService.getRequestByUser(userId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     public ParticipationRequestDto cancelRequestByUser(@PathVariable long userId,
                                                 @PathVariable long requestId) {
-        log.info("PATCH  - запрос от пользователя с id={} на отмечу своей заявки с id={} на участик в событие.",
+        log.info("PATCH private  - запрос от пользователя с id={} на отмечу своей заявки с id={} на участик в событие.",
                 userId, requestId);
         return requestPrivateService.cancelRequestByUser(userId, requestId);
     }

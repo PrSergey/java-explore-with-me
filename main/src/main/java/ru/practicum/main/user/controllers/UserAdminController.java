@@ -23,7 +23,7 @@ public class UserAdminController {
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto saveUser(@RequestBody @Valid UserDto userDto) {
-        log.info("POST - запрос на сохранение пользователя в базе. В сервисе admin");
+        log.info("POST admin - запрос на сохранение пользователя в базе. В сервисе admin");
         return userAdminService.saveUser(userDto);
     }
 
@@ -31,14 +31,14 @@ public class UserAdminController {
     public List<UserDto> getUsers(@RequestParam(name = "ids", required = false) List<Long> usersId,
                            @RequestParam(name = "from", defaultValue = "0") int from,
                            @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("GET - запрос на получение пользователей с id = {}", usersId);
+        log.info("GET admin - запрос на получение пользователей с id = {}", usersId);
         return userAdminService.getUsers(usersId, from, size);
     }
 
     @DeleteMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public HttpStatus deleteUser(@PathVariable Long userId) {
-        log.info("DELETE - запрос на удаление пользователя с id = {}", userId);
+        log.info("DELETE admin - запрос на удаление пользователя с id = {}", userId);
         userAdminService.deleteUser(userId);
         return HttpStatus.NO_CONTENT;
     }

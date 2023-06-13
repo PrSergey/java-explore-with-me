@@ -44,6 +44,25 @@ public class EventAdminServiceImpl implements EventAdminService {
     public List<EventDto> searchEvent(List<Long> users, List<EventState> states, List<Long> categories,
                                       String rangeStart, String rangeEnd, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from/size, size);
+        List<BooleanExpression> conditions = makeBooleanExpression(users, states, categories, rangeStart, rangeEnd);
+        if(conditions.size() != 0){
+            BooleanExpression finalCondition = conditions.stream()
+                    .reduce(BooleanExpression::and)
+                    .get();
+            return eventRepository.findAll(finalCondition, pageRequest)
+                    .stream()
+                    .map(eventMapper::toEventDto)
+                    .collect(Collectors.toList());
+        } else {
+            return eventRepository.findAll(pageRequest).stream()
+                    .map(eventMapper::toEventDto)
+                    .collect(Collectors.toList());
+        }
+
+    }
+
+    private List<BooleanExpression>  makeBooleanExpression(List<Long> users, List<EventState> states, List<Long> categories,
+                                                    String rangeStart, String rangeEnd) {
         QEvent event = QEvent.event;
         List<BooleanExpression> conditions = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -70,20 +89,7 @@ public class EventAdminServiceImpl implements EventAdminService {
             LocalDateTime rangeEndDate = LocalDateTime.parse(rangeEnd,formatter);
             conditions.add(event.eventDate.before(rangeEndDate));
         }
-        if(conditions.size() != 0){
-            BooleanExpression finalCondition = conditions.stream()
-                    .reduce(BooleanExpression::and)
-                    .get();
-            return eventRepository.findAll(finalCondition, pageRequest)
-                    .stream()
-                    .map(eventMapper::toEventDto)
-                    .collect(Collectors.toList());
-        } else {
-            return eventRepository.findAll(pageRequest).stream()
-                    .map(eventMapper::toEventDto)
-                    .collect(Collectors.toList());
-        }
-
+        return conditions;
     }
 
     @Override

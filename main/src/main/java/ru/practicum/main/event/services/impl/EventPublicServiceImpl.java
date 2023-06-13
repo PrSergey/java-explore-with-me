@@ -65,8 +65,8 @@ public class EventPublicServiceImpl implements EventPublicService {
 
     private BooleanExpression makeBooleanExpressionForGet(String text, List<Long> categories, Boolean paid, String rangeStart,
                                                           String rangeEnd) {
-        QEvent event = QEvent.event;
         List<BooleanExpression> conditions = new ArrayList<>();
+        QEvent event = QEvent.event;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (text != null) {
             List<BooleanExpression> textInAnnotationOrDescription = new ArrayList<>();
