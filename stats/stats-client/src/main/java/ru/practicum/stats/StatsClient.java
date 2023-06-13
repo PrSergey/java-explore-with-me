@@ -1,28 +1,33 @@
 package ru.practicum.stats;
 
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
+@Component
 public class StatsClient {
-
-    @Autowired
-    public StatsClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
 
     @Value("${stats.uri}")
     private String uri;
 
+    @Autowired
     private final WebClient webClient;
+
 
     public EndpointHitDto saveEndpointHit(String app, String uriEndpoint, String ip) {
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
@@ -31,11 +36,10 @@ public class StatsClient {
                 .uri(uriEndpoint)
                 .build();
 
-        return webClient
-                .post()
+        return webClient.post()
                 .uri(uri+"/hit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(endpointHitDto))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(endpointHitDto)
                 .retrieve()
                 .bodyToMono(EndpointHitDto.class)
                 .block();
@@ -52,9 +56,9 @@ public class StatsClient {
                         .queryParam("uries", uries)
                         .queryParam("unique", unique)
                         .build())
-                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ViewStatsDto>>() {})
+                .bodyToFlux(ViewStatsDto.class)
+                .collectList()
                 .block();
     }
 

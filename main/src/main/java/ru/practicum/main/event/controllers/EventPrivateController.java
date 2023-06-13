@@ -62,7 +62,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}/requests")
     EventRequestStatusUpdateResultDto updateEventRequest (@PathVariable long userId,
                                                                 @PathVariable long eventId,
-                                                                @RequestBody @Valid
+                                                                @RequestBody(required = false) @Valid
                                                                 EventRequestStatusUpdateRequestDto requestsByEvent) {
         log.info("PATCH - запрос изменение статуса (подтверждена, отменена) заявок на участие " +
                 "в событии текущего пользователя");

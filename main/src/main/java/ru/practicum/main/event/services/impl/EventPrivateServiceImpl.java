@@ -3,6 +3,7 @@ package ru.practicum.main.event.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.constant.EventStateAction;
@@ -48,6 +49,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
 
 
     @Override
+    @Transactional
     public EventDto saveEvent(long userId, NewEventDto newEventDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime eventDate = LocalDateTime.parse(newEventDto.getEventDate(),formatter);
@@ -73,6 +75,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getAllEventByInitiatorId(long userId, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from/size, size);
         List<Event> events = eventRepository.findAllByInitiator_Id(userId, pageRequest);
@@ -82,6 +85,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventDto getEventById(long userId, long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found"));
@@ -90,6 +94,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     @Override
+    @Transactional
     public EventDto updateEvent(long userId, long eventId, UpdateEventUserRequestDto updateEvent) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ValidationException("Событие с id=" + eventId + " не найдено в базе."));
@@ -133,6 +138,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> getRequestByEvent(long userId, long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found"));
@@ -145,10 +151,17 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResultDto updateEventRequest(long userId, long eventId,
                                                                   EventRequestStatusUpdateRequestDto requestsByEvent) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ExistenceException("Событие с id=" + eventId + " не найдено в базе."));
+                .orElseThrow(() -> new ValidationException("Событие с id=" + eventId + " не найдено в базе."));
+        if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+            throw new ValidationException("The limit has been reached for the event.");
+        }
+        if (requestsByEvent == null){
+            throw new ValidationException("RequestIds was not found in your request");
+        }
         List<ParticipationRequest> requestsByIds = requestRepository.findAllByIdIn(requestsByEvent.getRequestIds());
         checkInitiatorEventIsEqualsUserReq(event, userId);
         long countApproveReq = requestRepository.countByEvent_idAndStatus(eventId, RequestStatus.CONFIRMED);
@@ -161,6 +174,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                 && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             rejectedRequests = rejectedRequestsByEvent(eventId);
         }
+        rejectedRequests.addAll(requestRepository.findAllByEvent_IdAndStatus(eventId, RequestStatus.REJECTED));
         updateConfirmedRequestsByEvent(event, requestsByEvent);
         return makeResponseForUpdateRequest(requests, rejectedRequests, requestsByEvent);
     }
@@ -204,7 +218,8 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         return requestRepository.saveAll(requests);
     }
 
-    private void checkForUpdateEventRequest(long eventId, Event event,  EventRequestStatusUpdateRequestDto requestsByEvent,
+    private void checkForUpdateEventRequest(long eventId, Event event,
+                                            EventRequestStatusUpdateRequestDto requestsByEvent,
                                             List<ParticipationRequest> requestsByIds, long countApproveReq) {
         if(countApproveReq == event.getParticipantLimit()
                 && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {

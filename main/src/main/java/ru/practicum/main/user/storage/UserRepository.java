@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     List<User> findAllByIdIn(List<Long> userId, PageRequest pageRequest);
 
+    boolean existsAllByName(String name);
+
 }

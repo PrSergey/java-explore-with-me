@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.excepsion.ExistenceException;
+import ru.practicum.main.excepsion.ValidationException;
 import ru.practicum.main.user.dto.UserDto;
 import ru.practicum.main.user.dto.UserMapper;
 import ru.practicum.main.user.model.User;
@@ -29,6 +30,10 @@ public class UserAdminServiceImp implements UserAdminService {
     @Transactional
     @Override
     public UserDto saveUser(UserDto userDto) {
+        String name = userDto.getName();
+        if (userRepository.existsAllByName(name)) {
+            throw new ValidationException("User with name " + name + " already exists");
+        }
         User user = userMapper.fromUserDto(userDto);
         return userMapper.toUserDto(userRepository.save(user));
     }
@@ -48,6 +53,7 @@ public class UserAdminServiceImp implements UserAdminService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ExistenceException("User with id=" + id + " was not found");

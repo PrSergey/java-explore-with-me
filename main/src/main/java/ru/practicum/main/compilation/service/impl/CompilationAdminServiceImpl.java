@@ -2,20 +2,27 @@ package ru.practicum.main.compilation.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.compilation.dto.CompilationDto;
 import ru.practicum.main.compilation.dto.CompilationMapper;
 import ru.practicum.main.compilation.dto.NewCompilationDto;
 import ru.practicum.main.compilation.model.Compilation;
 import ru.practicum.main.compilation.service.CompilationAdminService;
 import ru.practicum.main.compilation.storage.CompilationRepository;
+import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.storage.EventRepository;
 import ru.practicum.main.excepsion.ExistenceException;
+import ru.practicum.main.excepsion.ValidationException;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.UnexpectedTypeException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     private final CompilationRepository compilationRepository;
@@ -25,6 +32,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     private final CompilationMapper compilationMapper;
 
     @Override
+    @Transactional
     public CompilationDto save(NewCompilationDto compilationDto) {
         Compilation compilation = new Compilation();
         if (compilationDto.getPinned() == null){
@@ -32,12 +40,19 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         } else {
             compilation.setPinned(compilationDto.getPinned());
         }
+        if (compilationDto.getTitle() == null) {
+            throw new UnexpectedTypeException("The title cannot be bull");
+        }
+        if (compilation.getTitle().isBlank()) {
+            throw new UnexpectedTypeException("The title cannot be blanck");
+        }
         compilation.setTitle(compilationDto.getTitle());
-        compilation.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()));
+        compilation.setEvents(getEvents(compilationDto.getEvents()));
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
 
     @Override
+    @Transactional
     public CompilationDto update(long compId, NewCompilationDto compilationDto) {
         Compilation newCompilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Не найдена подборка событий с ID = %s", compId)));
@@ -54,10 +69,21 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     }
 
     @Override
+    @Transactional
     public void delete(long compilationId) {
         if (!compilationRepository.existsById(compilationId)) {
             throw new ExistenceException("Compilation with id=" + compilationId + " was not found");
         }
         compilationRepository.deleteById(compilationId);
+    }
+
+    private List<Event> getEvents(List<Long> eventsIds) {
+        List<Event> events = new ArrayList<>();
+        if (eventsIds == null) {
+            return events;
+        } else {
+            events.addAll(eventRepository.findAllByIdIn(eventsIds));
+            return events;
+        }
     }
 }

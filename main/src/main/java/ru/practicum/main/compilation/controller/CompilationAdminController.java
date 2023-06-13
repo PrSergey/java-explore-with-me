@@ -28,12 +28,13 @@ public class CompilationAdminController {
 
     @PatchMapping("/{compId}")
     public CompilationDto update(@PathVariable long compId,
-                                 @RequestBody NewCompilationDto newCompilationDto) {
+                                 @RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.info("PATCH - запрос обновить информацию о подборке");
         return compilationAdminService.update(compId, newCompilationDto);
     }
 
     @DeleteMapping("/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public HttpStatus delete(@PathVariable long compId) {
         log.info("DELETE - запрос на удаление подборки");
         compilationAdminService.delete(compId);

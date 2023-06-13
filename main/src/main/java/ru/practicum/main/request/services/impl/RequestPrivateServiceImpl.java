@@ -1,7 +1,8 @@
-package ru.practicum.main.request.services;
+package ru.practicum.main.request.services.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.constant.RequestStatus;
 import ru.practicum.main.event.model.Event;
@@ -11,6 +12,7 @@ import ru.practicum.main.excepsion.ValidationException;
 import ru.practicum.main.request.dto.ParticipationRequestDto;
 import ru.practicum.main.request.dto.RequestMapper;
 import ru.practicum.main.request.model.ParticipationRequest;
+import ru.practicum.main.request.services.RequestPrivateService;
 import ru.practicum.main.request.storage.RequestRepository;
 import ru.practicum.main.user.model.User;
 import ru.practicum.main.user.storage.UserRepository;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class RequestPrivateServiceImpl implements RequestPrivateService {
 
     RequestRepository requestRepository;
@@ -33,9 +36,13 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     RequestMapper requestMapper;
 
     @Override
+    @Transactional
     public ParticipationRequestDto save(long userId, long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found."));
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == requestRepository.countAllByEvent_Id(eventId)) {
+            throw new ValidationException("The limit has been reached for the event.");
+        }
         if(requestRepository.existsByRequester_IdAndEvent_id(userId, eventId)) {
             throw new ValidationException("You cannot add a repeat request.");
         }
@@ -81,11 +88,12 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto cancelRequestByUser(long userId, long requestId) {
         ParticipationRequest participationRequest = requestRepository.findById(requestId)
                 .orElseThrow(()
                         -> new ValidationException("Participation request with id=" + requestId + "was not found."));
-        participationRequest.setStatus(RequestStatus.PENDING);
+        participationRequest.setStatus(RequestStatus.CANCELED);
         return requestMapper.toParticipationRequestDto(requestRepository.save(participationRequest));
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompilationDto {
 
-    Integer id;
+    Long id;
 
     List<EventShortDto> events;
 

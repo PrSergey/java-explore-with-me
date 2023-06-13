@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.model.Category;
 import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.constant.EventState;
@@ -39,6 +40,7 @@ public class EventAdminServiceImpl implements EventAdminService {
     private final LocationRepository locationRepository;
 
     @Override
+    @Transactional
     public List<EventDto> searchEvent(List<Long> users, List<EventState> states, List<Long> categories,
                                       String rangeStart, String rangeEnd, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from/size, size);
@@ -85,6 +87,7 @@ public class EventAdminServiceImpl implements EventAdminService {
     }
 
     @Override
+    @Transactional
     public EventDto updateAdminByEvent(long eventId, UpdateEventAdminRequestDto eventDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         Event event = eventRepository.findById(eventId)
