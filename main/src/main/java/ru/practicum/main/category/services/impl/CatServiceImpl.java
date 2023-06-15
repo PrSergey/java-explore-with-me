@@ -37,7 +37,12 @@ public class CatServiceImpl implements CatService {
     @Transactional
     @Override
     public CategoryDto updateCategory(long catId, CategoryDto categoryDto) {
-        checkNameCat(categoryDto.getName());
+        if (categoryRepository.existsAllByName(categoryDto.getName())) {
+            Category catStorage = categoryRepository.findAllByName(categoryDto.getName()).get(0);
+            if (catStorage.getId() != catId) {
+                throw new ValidationException("A category with the name " + catStorage.getName() + " already exists");
+            }
+        }
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new ExistenceException("Category with id=" + catId + " was not found."));
         category.setName(categoryDto.getName());

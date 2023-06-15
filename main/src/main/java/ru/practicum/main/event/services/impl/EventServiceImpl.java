@@ -87,6 +87,10 @@ public class EventServiceImpl implements EventService {
         List<BooleanExpression> conditions = new ArrayList<>();
         QEvent event = QEvent.event;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (rangeEnd != null && rangeStart != null
+                && LocalDateTime.parse(rangeStart, formatter).isAfter(LocalDateTime.parse(rangeEnd, formatter))) {
+            throw new UnexpectedTypeException("The beginning of the range cannot be later than the end of the range.");
+        }
         if (text != null) {
             List<BooleanExpression> textInAnnotationOrDescription = new ArrayList<>();
             String textLowerCase = text.toLowerCase();
@@ -135,7 +139,7 @@ public class EventServiceImpl implements EventService {
         String app = "ewm-main-service";
         String ipUser = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
-        //statsClient.saveEndpointHit(app, requestURI, ipUser);
+        statsClient.saveEndpointHit(app, requestURI, ipUser);
     }
 
     @Override
