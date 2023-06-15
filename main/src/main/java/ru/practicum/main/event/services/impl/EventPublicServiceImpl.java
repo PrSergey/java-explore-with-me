@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.constant.EventSort;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.event.dto.EventDto;
@@ -42,8 +41,8 @@ public class EventPublicServiceImpl implements EventPublicService {
                                    String rangeEnd, Boolean onlyAvailable, EventSort sort, int from, int size,
                                    HttpServletRequest request) {
         sendEndpointInStats(request);
-        PageRequest pageRequest = PageRequest.of(from/size, size);
-        if(text == null && categories == null && paid == null && rangeStart == null && rangeEnd == null){
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        if (text == null && categories == null && paid == null && rangeStart == null && rangeEnd == null) {
             return new ArrayList<>();
         }
         BooleanExpression finalCondition = makeBooleanExpressionForGet(text, categories, paid, rangeStart, rangeEnd);
@@ -51,7 +50,7 @@ public class EventPublicServiceImpl implements EventPublicService {
 
         if (onlyAvailable) {
             events.stream()
-                    .filter(ev -> (ev.getParticipantLimit()-ev.getConfirmedRequests()) > 0)
+                    .filter(ev -> (ev.getParticipantLimit() - ev.getConfirmedRequests()) > 0)
                     .collect(Collectors.toList());
         }
         if (sort != null && sort.equals(EventSort.VIEWS)) {
@@ -79,7 +78,7 @@ public class EventPublicServiceImpl implements EventPublicService {
             conditions.add(booleanExpressionText);
         }
         if (categories != null)
-            for(Long catId: categories) {
+            for (Long catId: categories) {
                 conditions.add(event.category.id.eq(catId));
             }
         if (paid != null)

@@ -12,7 +12,6 @@ import ru.practicum.main.compilation.storage.CompilationRepository;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.storage.EventRepository;
 import ru.practicum.main.excepsion.ExistenceException;
-import ru.practicum.main.excepsion.ValidationException;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.UnexpectedTypeException;
@@ -39,7 +38,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         }
 
         Compilation compilation = new Compilation();
-        if (compilationDto.getPinned() == null){
+        if (compilationDto.getPinned() == null) {
             compilation.setPinned(false);
         } else {
             compilation.setPinned(compilationDto.getPinned());

@@ -1,6 +1,5 @@
 package ru.practicum.main.request.services.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import ru.practicum.main.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,18 +43,18 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 && event.getParticipantLimit() == requestRepository.countAllByEvent_Id(eventId)) {
             throw new ValidationException("The limit has been reached for the event.");
         }
-        if(requestRepository.existsByRequester_IdAndEvent_id(userId, eventId)) {
+        if (requestRepository.existsByRequester_IdAndEvent_id(userId, eventId)) {
             throw new ValidationException("You cannot add a repeat request.");
         }
-        if(event.getInitiator().getId() == userId) {
+        if (event.getInitiator().getId() == userId) {
             throw new ValidationException("The initiator of the event cannot " +
                     "add a request to participate in his event.");
         }
-        if(!event.getState().equals(EventState.PUBLISHED)) {
+        if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ValidationException("You cannot participate in an unpublished event.");
         }
         long countRequestByEvent = requestRepository.countByEvent_idAndStatus(eventId, RequestStatus.CONFIRMED);
-        if(event.getParticipantLimit() != 0 && countRequestByEvent > event.getParticipantLimit()) {
+        if (event.getParticipantLimit() != 0 && countRequestByEvent > event.getParticipantLimit()) {
             throw new ValidationException("The limit of requests for participation in the event has been reached.");
         }
 
@@ -67,12 +65,12 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                 .event(event)
                 .requester(user)
                 .build();
-        if(!event.isRequestModeration()){
+        if (!event.isRequestModeration()) {
             requestByEvent.setStatus(RequestStatus.CONFIRMED);
         } else {
             requestByEvent.setStatus(RequestStatus.PENDING);
         }
-        if(event.getParticipantLimit() == 0) {
+        if (event.getParticipantLimit() == 0) {
             requestByEvent.setStatus(RequestStatus.CONFIRMED);
         }
 

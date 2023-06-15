@@ -53,7 +53,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     public EventDto saveEvent(long userId, NewEventDto newEventDto) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime eventDate = LocalDateTime.parse(newEventDto.getEventDate(),formatter);
-        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))){
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new UnexpectedTypeException("Field: eventDate. " +
                     "Error: должно содеражть дату не раньше 2 часов от даты создания события. Value: " + eventDate);
         }
@@ -77,7 +77,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> getAllEventByInitiatorId(long userId, int from, int size) {
-        PageRequest pageRequest = PageRequest.of(from/size, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllByInitiator_Id(userId, pageRequest);
         return events.stream()
                 .map(eventMapper::toEventShortDto)
@@ -103,26 +103,26 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime eventDate;
-        if (updateEvent.getEventDate() != null){
+        if (updateEvent.getEventDate() != null) {
             eventDate = LocalDateTime.parse(updateEvent.getEventDate(),formatter);
-            if(eventDate.isBefore(LocalDateTime.now())) {
+            if (eventDate.isBefore(LocalDateTime.now())) {
                 throw new UnexpectedTypeException("Field: eventDate. " +
                         "Error: должно содеражть дату не раньше 2 часов от даты создания события. Value: "
                         + updateEvent.getEventDate());
             }
             event.setEventDate(eventDate);
         }
-        if(event.getState().equals(EventState.PUBLISHED)) {
+        if (event.getState().equals(EventState.PUBLISHED)) {
             throw new ValidationException("Нельзя изменять событие, когда оно опубликовано.");
         }
 
         checkInitiatorEventIsEqualsUserReq(event, userId);
-        if(updateEvent.getStateAction() != null){
-            if(updateEvent.getStateAction().equals(EventStateAction.SEND_TO_REVIEW)) {
+        if (updateEvent.getStateAction() != null) {
+            if (updateEvent.getStateAction().equals(EventStateAction.SEND_TO_REVIEW)) {
                 event.setState(EventState.PENDING);
-            } else if(updateEvent.getStateAction().equals(EventStateAction.CANCEL_REVIEW)) {
+            } else if (updateEvent.getStateAction().equals(EventStateAction.CANCEL_REVIEW)) {
                 event.setState(EventState.CANCELED);
-            } else if(updateEvent.getStateAction().equals(EventStateAction.PUBLISH_EVENT)) {
+            } else if (updateEvent.getStateAction().equals(EventStateAction.PUBLISH_EVENT)) {
                 event.setState(EventState.PUBLISHED);
             }
         }
@@ -143,7 +143,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found"));
         checkInitiatorEventIsEqualsUserReq(event, userId);
-        List<ParticipationRequest> allRequestById= requestRepository.findAllByEvent_Id(eventId);
+        List<ParticipationRequest> allRequestById = requestRepository.findAllByEvent_Id(eventId);
         return allRequestById
                 .stream()
                 .map(requestMapper::toParticipationRequestDto)
@@ -159,7 +159,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         if (event.getConfirmedRequests() == event.getParticipantLimit()) {
             throw new ValidationException("The limit has been reached for the event.");
         }
-        if (requestsByEvent == null){
+        if (requestsByEvent == null) {
             throw new ValidationException("RequestIds was not found in your request");
         }
         List<ParticipationRequest> requestsByIds = requestRepository.findAllByIdIn(requestsByEvent.getRequestIds());
@@ -170,7 +170,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         requestsByIds.forEach(req -> req.setStatus(requestsByEvent.getStatus()));
         List<ParticipationRequest> requests = requestRepository.saveAll(requestsByIds);
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
-        if(countApproveReq + requestsByEvent.getRequestIds().size() == event.getParticipantLimit()
+        if (countApproveReq + requestsByEvent.getRequestIds().size() == event.getParticipantLimit()
                 && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             rejectedRequests = rejectedRequestsByEvent(eventId);
         }
@@ -180,7 +180,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     }
 
     private void updateConfirmedRequestsByEvent(Event event, EventRequestStatusUpdateRequestDto requestsByEvent) {
-        if(requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
+        if (requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             long confirmedRequests = event.getConfirmedRequests();
             event.setConfirmedRequests(confirmedRequests + requestsByEvent.getRequestIds().size());
             eventRepository.save(event);
@@ -191,7 +191,7 @@ public class EventPrivateServiceImpl implements EventPrivateService {
                                                                            List<ParticipationRequest> rejectedRequests,
                                                                  EventRequestStatusUpdateRequestDto requestsByEvent) {
         EventRequestStatusUpdateResultDto resultDto = new EventRequestStatusUpdateResultDto();
-        if(requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
+        if (requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             resultDto.setConfirmedRequests(requests
                     .stream()
                     .map(requestMapper::toParticipationRequestDto)
@@ -221,22 +221,22 @@ public class EventPrivateServiceImpl implements EventPrivateService {
     private void checkForUpdateEventRequest(long eventId, Event event,
                                             EventRequestStatusUpdateRequestDto requestsByEvent,
                                             List<ParticipationRequest> requestsByIds, long countApproveReq) {
-        if(countApproveReq == event.getParticipantLimit()
+        if (countApproveReq == event.getParticipantLimit()
                 && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             throw new ValidationException("The participant limit has been reached");
         } else if (countApproveReq + requestsByEvent.getRequestIds().size() > event.getParticipantLimit()
-                && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED) ) {
+                && requestsByEvent.getStatus().equals(RequestStatus.CONFIRMED)) {
             throw new ValidationException("The participant limit has been reached");
         }
-        for(ParticipationRequest request: requestsByIds) {
-            if(!request.getStatus().equals(RequestStatus.PENDING)) {
+        for (ParticipationRequest request: requestsByIds) {
+            if (!request.getStatus().equals(RequestStatus.PENDING)) {
                 throw new ValidationException("Request must have status PENDING");
             }
         }
     }
 
     private void checkInitiatorEventIsEqualsUserReq(Event event, long userId) {
-        if(event.getInitiator().getId() != userId) {
+        if (event.getInitiator().getId() != userId) {
             throw new ValidationException("The user with the id="
                     + userId + " is not the initiator of the event with the id = " + event.getId());
         }

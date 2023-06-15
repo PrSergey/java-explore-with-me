@@ -11,13 +11,13 @@ public interface EventPrivateService {
 
     List<EventShortDto> getAllEventByInitiatorId(long userID, int from, int size);
 
-    EventDto getEventById( long userId, long eventId);
+    EventDto getEventById(long userId, long eventId);
 
     EventDto updateEvent(long userId, long eventId, UpdateEventUserRequestDto updateEvent);
 
     List<ParticipationRequestDto> getRequestByEvent(long userId, long eventId);
 
-    EventRequestStatusUpdateResultDto updateEventRequest (long userId, long eventId,
+    EventRequestStatusUpdateResultDto updateEventRequest(long userId, long eventId,
                                                                 EventRequestStatusUpdateRequestDto requestsByEvent);
 
 }

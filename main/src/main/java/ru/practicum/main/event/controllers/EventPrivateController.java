@@ -1,7 +1,6 @@
 package ru.practicum.main.event.controllers;
 
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -60,7 +59,7 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    EventRequestStatusUpdateResultDto updateEventRequest (@PathVariable long userId,
+    EventRequestStatusUpdateResultDto updateEventRequest(@PathVariable long userId,
                                                                 @PathVariable long eventId,
                                                                 @RequestBody(required = false) @Valid
                                                                 EventRequestStatusUpdateRequestDto requestsByEvent) {

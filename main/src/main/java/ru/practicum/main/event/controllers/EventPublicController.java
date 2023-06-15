@@ -3,7 +3,6 @@ package ru.practicum.main.event.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.constant.EventSort;
 import ru.practicum.main.event.dto.EventDto;

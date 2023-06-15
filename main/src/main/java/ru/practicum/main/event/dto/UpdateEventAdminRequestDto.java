@@ -1,12 +1,10 @@
 package ru.practicum.main.event.dto;
 
 import lombok.Data;
-import ru.practicum.main.category.model.Category;
 import ru.practicum.main.constant.EventStateAction;
 import ru.practicum.main.event.model.Location;
 
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Data
 public class UpdateEventAdminRequestDto {

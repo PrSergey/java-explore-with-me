@@ -6,11 +6,7 @@ import ru.practicum.main.category.model.Category;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.event.model.Location;
 import ru.practicum.main.user.dto.UserShortDto;
-import ru.practicum.main.user.model.User;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data

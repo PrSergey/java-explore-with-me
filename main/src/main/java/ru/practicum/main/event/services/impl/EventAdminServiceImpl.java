@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.main.category.model.Category;
 import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.constant.EventStateAction;
@@ -43,9 +42,9 @@ public class EventAdminServiceImpl implements EventAdminService {
     @Transactional
     public List<EventDto> searchEvent(List<Long> users, List<EventState> states, List<Long> categories,
                                       String rangeStart, String rangeEnd, int from, int size) {
-        PageRequest pageRequest = PageRequest.of(from/size, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         List<BooleanExpression> conditions = makeBooleanExpression(users, states, categories, rangeStart, rangeEnd);
-        if(conditions.size() != 0){
+        if (conditions.size() != 0) {
             BooleanExpression finalCondition = conditions.stream()
                     .reduce(BooleanExpression::and)
                     .get();
@@ -66,7 +65,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         QEvent event = QEvent.event;
         List<BooleanExpression> conditions = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        if (users != null){
+        if (users != null) {
             for (Long userId : users) {
                 conditions.add(event.initiator.id.eq(userId));
             }
@@ -76,7 +75,7 @@ public class EventAdminServiceImpl implements EventAdminService {
                 conditions.add(event.state.stringValue().eq(state.toString()));
             }
         }
-        if (categories != null){
+        if (categories != null) {
             for (Long categoryId : categories) {
                 conditions.add(event.category.id.eq(categoryId));
             }
@@ -99,7 +98,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + " was not found"));
         LocalDateTime eventDate = event.getEventDate();
-        if(eventDto.getEventDate() != null){
+        if (eventDto.getEventDate() != null) {
             eventDate = LocalDateTime.parse(eventDto.getEventDate(),formatter);
             if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new UnexpectedTypeException("Field: eventDate. " +

@@ -1,6 +1,5 @@
 package ru.practicum.main.category.services.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class CatPublicServiceImpl implements CatPublicService {
 
     @Override
     public List<CategoryDto> getAllCategories(int from, int size) {
-        PageRequest pageRequest = PageRequest.of(from/size, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
         return categoryRepository.findAll(pageRequest)
                 .stream()
                 .map(categoryMapper::toCategoryDto)
