@@ -135,7 +135,7 @@ public class EventServiceImpl implements EventService {
         String app = "ewm-main-service";
         String ipUser = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
-        statsClient.saveEndpointHit(app, requestURI, ipUser);
+        //statsClient.saveEndpointHit(app, requestURI, ipUser);
     }
 
     @Override
