@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -22,11 +23,12 @@ public class StatsClient {
 
 
     public EndpointHitDto saveEndpointHit(String app, String uriEndpoint, String ip) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         EndpointHitDto endpointHitDto = EndpointHitDto.builder()
                 .app(app)
                 .ip(ip)
                 .uri(uriEndpoint)
-                .timestamp(LocalDateTime.now().toString())
+                .timestamp(LocalDateTime.now().format(formatter))
                 .build();
 
         return webClient.post()
