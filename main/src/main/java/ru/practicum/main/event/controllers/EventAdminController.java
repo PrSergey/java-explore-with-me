@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.constant.EventState;
 import ru.practicum.main.event.dto.EventDto;
 import ru.practicum.main.event.dto.UpdateEventAdminRequestDto;
-import ru.practicum.main.event.services.EventAdminService;
+import ru.practicum.main.event.services.EventService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventAdminController {
 
-    private final EventAdminService eventAdminService;
+    private final EventService eventService;
 
     @GetMapping
     public List<EventDto> searchEvent(@RequestParam(required = false) List<Long> users,
@@ -29,14 +29,14 @@ public class EventAdminController {
                                @RequestParam(defaultValue = "0") int from,
                                @RequestParam(defaultValue = "10") int size) {
         log.info("GET admin - запрос админ поиска события администратором");
-        return eventAdminService.searchEvent(users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventService.searchEvent(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
     public EventDto updateAdminByEvent(@PathVariable long eventId,
                                 @RequestBody @Valid UpdateEventAdminRequestDto eventDto) {
         log.info("PATCH admin - запрос админ редактирование данных события и его статуса (отклонение/публикация).");
-        return eventAdminService.updateAdminByEvent(eventId, eventDto);
+        return eventService.updateAdminByEvent(eventId, eventDto);
     }
 
 }

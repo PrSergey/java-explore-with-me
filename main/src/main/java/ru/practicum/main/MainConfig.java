@@ -10,8 +10,8 @@ import ru.practicum.stats.StatsClient;
 public class MainConfig {
 
     @Bean
-    public void makeStatsClient() {
-        new StatsClient();
+    public StatsClient makeStatsClient() {
+        return new  StatsClient(WebClient.create("${stats.uri}"));
     }
 
 }

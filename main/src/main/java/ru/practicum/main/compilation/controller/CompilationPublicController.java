@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.compilation.dto.CompilationDto;
-import ru.practicum.main.compilation.service.CompilationPublicService;
+import ru.practicum.main.compilation.service.CompilationService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CompilationPublicController {
 
-    private final CompilationPublicService compilationPublicService;
+    private final CompilationService compilationPublicService;
 
     @GetMapping
     public List<CompilationDto> getCompilations(@RequestParam(defaultValue = "false") Boolean pinned,

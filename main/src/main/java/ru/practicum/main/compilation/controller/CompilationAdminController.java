@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.compilation.dto.CompilationDto;
 import ru.practicum.main.compilation.dto.NewCompilationDto;
-import ru.practicum.main.compilation.service.CompilationAdminService;
+import ru.practicum.main.compilation.service.CompilationService;
 
 import javax.validation.Valid;
 
@@ -17,27 +17,27 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class CompilationAdminController {
 
-    private final CompilationAdminService compilationAdminService;
+    private final CompilationService compilationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto save(@RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.info("POST admin - запрос добавление новой подборки");
-        return compilationAdminService.save(newCompilationDto);
+        return compilationService.save(newCompilationDto);
     }
 
     @PatchMapping("/{compId}")
     public CompilationDto update(@PathVariable long compId,
                                  @RequestBody @Valid NewCompilationDto newCompilationDto) {
         log.info("PATCH admin - запрос обновить информацию о подборке");
-        return compilationAdminService.update(compId, newCompilationDto);
+        return compilationService.update(compId, newCompilationDto);
     }
 
     @DeleteMapping("/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public HttpStatus delete(@PathVariable long compId) {
         log.info("DELETE admin - запрос на удаление подборки");
-        compilationAdminService.delete(compId);
+        compilationService.delete(compId);
         return HttpStatus.NO_CONTENT;
     }
 

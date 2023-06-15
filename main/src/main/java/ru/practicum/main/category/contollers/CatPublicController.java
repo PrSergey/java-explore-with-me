@@ -4,8 +4,8 @@ package ru.practicum.main.category.contollers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.main.category.services.CatPublicService;
 import ru.practicum.main.category.dto.CategoryDto;
+import ru.practicum.main.category.services.CatService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/categories")
 public class CatPublicController {
 
-    CatPublicService catPublicService;
+    CatService catPublicService;
 
     @GetMapping
     public List<CategoryDto> getAllCategories(@RequestParam(name = "from", defaultValue = "0") int from,

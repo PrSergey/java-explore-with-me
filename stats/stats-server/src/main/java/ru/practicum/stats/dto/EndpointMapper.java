@@ -4,13 +4,11 @@ import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.model.EndpointHit;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class EndpointMapper {
 
     public static EndpointHit fromEndpointHitDto(EndpointHitDto endpointHitDto) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime startTime = LocalDateTime.parse(endpointHitDto.getTimestamp(), formatter);
+        LocalDateTime startTime = LocalDateTime.parse(endpointHitDto.getTimestamp());
         return EndpointHit.builder()
                 .app(endpointHitDto.getApp())
                 .uri(endpointHitDto.getUri())

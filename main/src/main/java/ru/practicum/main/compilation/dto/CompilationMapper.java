@@ -6,6 +6,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import ru.practicum.main.compilation.model.Compilation;
 import ru.practicum.main.event.dto.EventMapper;
+
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring", uses = {EventMapper.class})
 public interface CompilationMapper {

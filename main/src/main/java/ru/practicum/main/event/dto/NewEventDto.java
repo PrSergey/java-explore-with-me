@@ -2,15 +2,11 @@ package ru.practicum.main.event.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import ru.practicum.main.category.model.Category;
 import ru.practicum.main.event.model.Location;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 
 @Data
@@ -39,7 +35,6 @@ public class NewEventDto {
 
     private Integer participantLimit;
 
-    
     private Boolean requestModeration;
 
     @NotBlank

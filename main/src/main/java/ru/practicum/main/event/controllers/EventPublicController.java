@@ -3,11 +3,10 @@ package ru.practicum.main.event.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.constant.EventSort;
 import ru.practicum.main.event.dto.EventDto;
-import ru.practicum.main.event.services.EventPublicService;
+import ru.practicum.main.event.services.EventService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 @RequestMapping("/events")
 public class EventPublicController {
 
-    private final EventPublicService eventPublicService;
+    private final EventService eventPublicService;
 
     @GetMapping
     List<EventDto> getEvent(@RequestParam(required = false) String text,

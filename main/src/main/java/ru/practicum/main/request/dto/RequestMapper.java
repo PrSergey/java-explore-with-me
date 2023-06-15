@@ -6,9 +6,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.Mapping;
 import ru.practicum.main.request.model.ParticipationRequest;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring")
 public interface RequestMapper {
