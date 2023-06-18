@@ -60,7 +60,6 @@ public class EventServiceImpl implements EventService {
     public List<EventDto> getEvent(String text, List<Long> categories, Boolean paid, String rangeStart,
                                    String rangeEnd, Boolean onlyAvailable, EventSort sort, int from, int size,
                                    HttpServletRequest request) {
-        sendEndpointInStats(request);
         PageRequest pageRequest = PageRequest.of(from / size, size);
         if (text == null && categories == null && paid == null && rangeStart == null && rangeEnd == null) {
             return new ArrayList<>();
@@ -73,7 +72,7 @@ public class EventServiceImpl implements EventService {
                     .filter(ev -> (ev.getParticipantLimit() - ev.getConfirmedRequests()) > 0)
                     .collect(Collectors.toList());
         }
-
+        sendEndpointInStats(request);
         List<EventDto> eventDtos = new ArrayList<>();
         for (Event event: events) {
             EventDto eventDto = eventMapper.toEventDto(event);
