@@ -1,7 +1,8 @@
-package ru.practicum.stats.server;
+package ru.practicum.stats.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.ViewStatsDto;
 import ru.practicum.stats.dto.EndpointMapper;
@@ -22,12 +23,14 @@ public class StatsServiceImp implements StatsService {
     StatsRepository statsRepository;
 
     @Override
+    @Transactional
     public EndpointHitDto save(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = EndpointMapper.fromEndpointHitDto(endpointHitDto);
         return EndpointMapper.toEndpointHitDto(statsRepository.save(endpointHit));
     }
 
     @Override
+    @Transactional
     public List<ViewStatsDto> get(List<String> uris, Boolean unique, LocalDateTime start, LocalDateTime end) {
         List<ViewStats> allViewStats;
         if (start.isAfter(end)) {

@@ -69,9 +69,6 @@ public class Event {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "views")
-    private long views;
-
     public Event(String annotation, Category category, String description, LocalDateTime eventDate, Location location,
                  Boolean paid, Integer participantLimit, Boolean requestModeration, String title) {
         this.annotation = annotation;
