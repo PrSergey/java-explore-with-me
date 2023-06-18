@@ -1,25 +1,29 @@
-package ru.practicum.stats;
+package ru.practicum.main.stats;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import ru.practicum.stats.EndpointHitDto;
+import ru.practicum.stats.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class StatsClient {
 
-    @Value("${stats.uri}")
-    private String uri;
+
 
     private final WebClient webClient;
 
+    @Autowired
+    public StatsClient(@Value("${stats.uri}") String uri) {
+        this.webClient = WebClient.create(uri);
+    }
 
 
     public EndpointHitDto saveEndpointHit(String app, String uriEndpoint, String ip) {
@@ -32,7 +36,7 @@ public class StatsClient {
                 .build();
 
         return webClient.post()
-                .uri(uri + "/hit")
+                .uri("/hit")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .bodyValue(endpointHitDto)
                 .retrieve()
@@ -40,10 +44,12 @@ public class StatsClient {
                 .block();
     }
 
-    public List<ViewStatsDto> getViewStats(LocalDateTime start, LocalDateTime end,
+
+
+    public List<ViewStatsDto> getViewStats(String start, String end,
                                            List<String> uries, Boolean unique) {
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path(uri + "/stats")
+                .uri(uriBuilder -> uriBuilder.path("/stats")
                         .queryParam("start", start)
                         .queryParam("end", end)
                         .queryParam("uries", uries)

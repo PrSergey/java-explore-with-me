@@ -13,25 +13,13 @@ import java.time.LocalDateTime;
 @Builder
 public class EventDto {
 
-    private long id;
-
-    private String annotation;
-
-    private Category category;
-
-    private Integer confirmedRequests;
-
     private LocalDateTime createdOn;
 
     private String description;
 
     private String eventDate;
 
-    private UserShortDto initiator;
-
     private Location location;
-
-    private Boolean paid;
 
     private Integer participantLimit;
 
@@ -40,6 +28,18 @@ public class EventDto {
     private Boolean requestModeration;
 
     private EventState state;
+
+    private String annotation;
+
+    private Category category;
+
+    private Integer confirmedRequests;
+
+    private Long id;
+
+    private UserShortDto initiator;
+
+    private Boolean paid;
 
     private String title;
 

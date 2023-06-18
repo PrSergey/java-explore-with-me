@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.main.category.srorage.CategoryRepository;
 import ru.practicum.main.excepsion.ExistenceException;
 import ru.practicum.main.excepsion.ValidationException;
 import ru.practicum.main.user.dto.UserDto;
@@ -22,8 +21,6 @@ import java.util.stream.Collectors;
 public class UserAdminServiceImp implements UserAdminService {
 
     private final UserRepository userRepository;
-
-    private final CategoryRepository categoryRepository;
 
     private final UserMapper userMapper;
 

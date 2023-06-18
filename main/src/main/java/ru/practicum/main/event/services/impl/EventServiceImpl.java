@@ -6,10 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.category.srorage.CategoryRepository;
-import ru.practicum.main.constant.EventSort;
-import ru.practicum.main.constant.EventState;
-import ru.practicum.main.constant.EventStateAction;
-import ru.practicum.main.constant.RequestStatus;
+import ru.practicum.main.constant.*;
 import ru.practicum.main.event.dto.*;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.model.QEvent;
@@ -23,7 +20,8 @@ import ru.practicum.main.request.dto.RequestMapper;
 import ru.practicum.main.request.model.ParticipationRequest;
 import ru.practicum.main.request.storage.RequestRepository;
 import ru.practicum.main.user.storage.UserRepository;
-import ru.practicum.stats.StatsClient;
+import ru.practicum.main.stats.StatsClient;
+import ru.practicum.stats.ViewStatsDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.UnexpectedTypeException;
@@ -54,6 +52,8 @@ public class EventServiceImpl implements EventService {
 
     private final StatsClient statsClient;
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
     @Override
     @Transactional(readOnly = true)
@@ -73,20 +73,25 @@ public class EventServiceImpl implements EventService {
                     .filter(ev -> (ev.getParticipantLimit() - ev.getConfirmedRequests()) > 0)
                     .collect(Collectors.toList());
         }
-        if (sort != null && sort.equals(EventSort.VIEWS)) {
-            events.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
-        } else if (sort != null && sort.equals(EventSort.EVENT_DATE)) {
-            events.stream().sorted(Comparator.comparing(Event::getEventDate)).collect(Collectors.toList());
-        }
 
-        return events.stream().map(eventMapper::toEventDto).collect(Collectors.toList());
+        List<EventDto> eventDtos = new ArrayList<>();
+        for (Event event: events) {
+            EventDto eventDto = eventMapper.toEventDto(event);
+            eventDto.setViews(setViewsInEventDto(event));
+            eventDtos.add(eventDto);
+        }
+        if (sort != null && sort.equals(EventSort.VIEWS)) {
+            eventDtos.stream().sorted(Comparator.comparing(EventDto::getViews)).collect(Collectors.toList());
+        } else if (sort != null && sort.equals(EventSort.EVENT_DATE)) {
+            eventDtos.stream().sorted(Comparator.comparing(EventDto::getEventDate)).collect(Collectors.toList());
+        }
+        return eventDtos;
     }
 
     private BooleanExpression makeBooleanExpressionForGet(String text, List<Long> categories, Boolean paid, String rangeStart,
                                                           String rangeEnd) {
         List<BooleanExpression> conditions = new ArrayList<>();
         QEvent event = QEvent.event;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (rangeEnd != null && rangeStart != null
                 && LocalDateTime.parse(rangeStart, formatter).isAfter(LocalDateTime.parse(rangeEnd, formatter))) {
             throw new UnexpectedTypeException("The beginning of the range cannot be later than the end of the range.");
@@ -108,13 +113,13 @@ public class EventServiceImpl implements EventService {
         if (paid != null)
             conditions.add(event.paid.eq(paid));
         if (rangeStart != null) {
-            LocalDateTime rangeStartDate = LocalDateTime.parse(rangeStart,formatter);
+            LocalDateTime rangeStartDate = LocalDateTime.parse(rangeStart, formatter);
             conditions.add(event.eventDate.after(rangeStartDate));
         } else {
             conditions.add(event.eventDate.after(LocalDateTime.now()));
         }
         if (rangeEnd != null) {
-            LocalDateTime rangeEndDate = LocalDateTime.parse(rangeEnd,formatter);
+            LocalDateTime rangeEndDate = LocalDateTime.parse(rangeEnd, formatter);
             conditions.add(event.eventDate.before(rangeEndDate));
         }
         return conditions.stream()
@@ -125,18 +130,32 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public EventDto getEventById(long eventId, HttpServletRequest request) {
-        sendEndpointInStats(request);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ExistenceException("Event with id=" + eventId + "was not found"));
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ExistenceException("Event was not found or not published");
         }
-        event.setViews(event.getViews() + 1);
-        return eventMapper.toEventDto(eventRepository.save(event));
+        EventDto eventDto = eventMapper.toEventDto(eventRepository.save(event));
+        eventDto.setViews(setViewsInEventDto(event));
+        sendEndpointInStats(request);
+        return eventDto;
+    }
+
+    private long setViewsInEventDto(Event event) {
+        long views;
+        List<String> uri = List.of("/events/" + event.getId());
+        List<ViewStatsDto> viewStats = statsClient.getViewStats(event.getCreatedOn().format(formatter),
+                LocalDateTime.now().format(formatter), uri, false);
+        if (viewStats.isEmpty()) {
+            return 0;
+        } else {
+            views = viewStats.size();
+        }
+        return views;
     }
 
     private void sendEndpointInStats(HttpServletRequest request) {
-        String app = "ewm-main-service";
+        String app = AppConstant.NAME_SERVICE;
         String ipUser = request.getRemoteAddr();
         String requestURI = request.getRequestURI();
         statsClient.saveEndpointHit(app, requestURI, ipUser);
@@ -148,20 +167,22 @@ public class EventServiceImpl implements EventService {
                                       String rangeStart, String rangeEnd, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<BooleanExpression> conditions = makeBooleanExpression(users, states, categories, rangeStart, rangeEnd);
+        List<Event> events;
         if (conditions.size() != 0) {
             BooleanExpression finalCondition = conditions.stream()
                     .reduce(BooleanExpression::and)
                     .get();
-            return eventRepository.findAll(finalCondition, pageRequest)
-                    .stream()
-                    .map(eventMapper::toEventDto)
-                    .collect(Collectors.toList());
+            events = eventRepository.findAll(finalCondition, pageRequest).stream().collect(Collectors.toList());
         } else {
-            return eventRepository.findAll(pageRequest).stream()
-                    .map(eventMapper::toEventDto)
-                    .collect(Collectors.toList());
+            events = eventRepository.findAll(pageRequest).stream().collect(Collectors.toList());
         }
-
+        List<EventDto> eventDtos = new ArrayList<>();
+        for (Event event: events) {
+            EventDto eventDto = eventMapper.toEventDto(event);
+            eventDto.setViews(setViewsInEventDto(event));
+            eventDtos.add(eventDto);
+        }
+        return eventDtos;
     }
 
     private List<BooleanExpression>  makeBooleanExpression(List<Long> users, List<EventState> states, List<Long> categories,
@@ -231,6 +252,7 @@ public class EventServiceImpl implements EventService {
         }
         EventDto eventDtoAfterSave = eventMapper.toEventDto(eventRepository.save(event));
         eventDtoAfterSave.setEventDate(eventDate.format(formatter));
+        eventDtoAfterSave.setViews(setViewsInEventDto(event));
         return eventDtoAfterSave;
     }
 
@@ -265,9 +287,13 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEventByInitiatorId(long userId, int from, int size) {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findAllByInitiator_Id(userId, pageRequest);
-        return events.stream()
-                .map(eventMapper::toEventShortDto)
-                .collect(Collectors.toList());
+        List<EventShortDto> eventShortDtos = new ArrayList<>();
+        for (Event event: events) {
+            EventShortDto eventShortDto = eventMapper.toEventShortDto(event);
+            eventShortDto.setViews(setViewsInEventDto(event));
+            eventShortDtos.add(eventShortDto);
+        }
+        return eventShortDtos;
     }
 
     @Override
