@@ -8,8 +8,11 @@ import java.time.format.DateTimeFormatter;
 
 public class EndpointMapper {
 
+
+
+
     public static EndpointHit fromEndpointHitDto(EndpointHitDto endpointHitDto) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startTime = LocalDateTime.parse(endpointHitDto.getTimestamp(), formatter);
         return EndpointHit.builder()
                 .app(endpointHitDto.getApp())
@@ -20,11 +23,12 @@ public class EndpointMapper {
     }
 
     public static EndpointHitDto toEndpointHitDto(EndpointHit endpointHit) {
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return EndpointHitDto.builder()
                 .app(endpointHit.getApp())
                 .ip(endpointHit.getIp())
                 .uri(endpointHit.getUri())
-                .timestamp(endpointHit.getTimestamp().toString())
+                .timestamp(endpointHit.getTimestamp().format(formatter))
                 .build();
     }
 
