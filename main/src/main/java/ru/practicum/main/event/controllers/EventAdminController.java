@@ -5,9 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.constant.EventState;
-import ru.practicum.main.event.dto.EventDto;
-import ru.practicum.main.event.dto.UpdateEventAdminRequestDto;
-import ru.practicum.main.event.services.EventService;
+import ru.practicum.main.event.dto.comment.CommentDto;
+import ru.practicum.main.event.dto.events.EventDto;
+import ru.practicum.main.event.dto.events.UpdateEventAdminRequestDto;
+import ru.practicum.main.event.services.CommentAdminService;
+import ru.practicum.main.event.services.EventAdminService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventAdminController {
 
-    private final EventService eventService;
+    private final EventAdminService eventService;
+
+    private final CommentAdminService commentAdminService;
 
     @GetMapping
     public List<EventDto> searchEvent(@RequestParam(required = false) List<Long> users,
@@ -37,6 +41,12 @@ public class EventAdminController {
                                 @RequestBody @Valid UpdateEventAdminRequestDto eventDto) {
         log.info("PATCH admin - запрос админ редактирование данных события и его статуса (отклонение/публикация).");
         return eventService.updateAdminByEvent(eventId, eventDto);
+    }
+
+    @PatchMapping("/comments")
+    public CommentDto blockedCommentById(@RequestParam(name = "comId") long comId) {
+        log.info("PATCH admin - запрос на блокировку комментария с id={}", comId);
+        return commentAdminService.blockerCommentById(comId);
     }
 
 }
