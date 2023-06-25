@@ -1,4 +1,4 @@
-package ru.practicum.main.event.dto;
+package ru.practicum.main.event.dto.events;
 
 
 import org.mapstruct.Mapper;
